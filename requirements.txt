@@ -1,0 +1,10 @@
+# Phase 1 – Research + Content (Gemini, with Google Search grounding)
+google-genai>=1.0.0
+python-dotenv>=1.0.0
+
+# Phase 3 – LinkedIn (SSL certs on macOS)
+certifi>=2024.0.0
+
+# Phase 2+ (placeholders; uncomment when needed)
+# google-auth-oauthlib>=1.2.0
+# google-api-python-client>=2.100.0
