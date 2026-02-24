@@ -11,7 +11,7 @@ Logs go to logs/cron.log (created automatically).
 import sys
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG_DIR = ROOT / "logs"
@@ -32,7 +32,7 @@ def main() -> None:
             log.write(msg)
             log.flush()
 
-        ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         write(f"\n--- {ts} (cron_run.py) ---\n")
 
         # Run pipeline

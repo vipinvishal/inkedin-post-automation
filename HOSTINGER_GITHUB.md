@@ -1,5 +1,7 @@
 # Host on Hostinger using GitHub (simplest)
 
+**Requirement:** You need a Hostinger **VPS** plan. Shared hosting does not provide Python, so this automation will not run on shared hosting.
+
 **Full walkthrough:** For detailed step-by-step from GitHub signup and repo creation through Hostinger login to cron, see **[SETUP_STEP_BY_STEP.md](SETUP_STEP_BY_STEP.md)**.
 
 4 steps: push to GitHub → connect repo in Hostinger → add .env and Python → add cron.

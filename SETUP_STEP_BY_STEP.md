@@ -2,6 +2,10 @@
 
 Two parts: **Part A** = set up GitHub and push your code. **Part B** = log in to Hostinger and host the app using that GitHub repo.
 
+**Hostinger requirement:** You need a **VPS** (or a plan with full SSH + Python). Shared hosting usually does not have Python, so the automation cannot run there. Use a Hostinger VPS for this setup.
+
+**If your Hostinger VPS is already ready:** Use **[HOSTINGER_FINAL_SETUP.md](HOSTINGER_FINAL_SETUP.md)** for a detailed step-by-step from login to cron (no GitHub setup).
+
 ---
 
 # Part A: Set up the GitHub repo
@@ -80,6 +84,8 @@ Part A is done. Your code is on GitHub. Next: Hostinger.
 ---
 
 # Part B: Host on Hostinger using GitHub
+
+**Requirement:** A Hostinger **VPS** plan (shared hosting does not provide Python for this app).
 
 ## B1. Log in to Hostinger
 
