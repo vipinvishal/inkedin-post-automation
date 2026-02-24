@@ -1,7 +1,7 @@
 """Research module: Gemini with Google Search grounding → structured notes (dict/JSON)."""
 import json
 import re
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from google import genai
@@ -9,6 +9,13 @@ from google.genai import types
 
 from config.prompts import RESEARCH_SYSTEM, RESEARCH_USER_TEMPLATE
 from config.settings import get_gemini_api_key, get_topic_focus
+
+# Rotating sub-focus by run (weekday % 3) so each post has a different angle
+RESEARCH_ANGLES = [
+    "New product launches, model releases, and benchmarks",
+    "Agent frameworks, multi-agent systems, and developer tools",
+    "Enterprise adoption, governance, and how companies are using AI",
+]
 
 
 def _extract_json(text: str) -> dict[str, Any]:
@@ -23,17 +30,28 @@ def _extract_json(text: str) -> dict[str, Any]:
 def run_research(
     topic_focus: str | None = None,
     reference_date: date | None = None,
+    research_angle: str | None = None,
+    avoid_theme: str | None = None,
     api_key: str | None = None,
 ) -> dict[str, Any]:
     """
     Run Gemini research with Google Search grounding (searches the web).
     Returns a dict with: headlines, summaries, links, comparisons_or_insights, date_context,
     company_moves, new_tools_and_agents, key_trends, how_to_use.
+    - research_angle: optional sub-focus for this run (e.g. "Agent frameworks and developer tools").
+    - avoid_theme: optional short text (e.g. last run's headline) so this run prefers different angles.
     Pass api_key to use a specific key (e.g. for fallback when another key hits 429).
     """
     topic_focus = topic_focus or get_topic_focus()
     reference_date = reference_date or date.today()
     ref_str = reference_date.isoformat()
+    since_date = (reference_date - timedelta(days=7)).isoformat()
+    recency_instruction = f"Focus on news and announcements from the last 7 days (since {since_date})."
+    angle_instruction = f"This run's angle: {research_angle}." if research_angle else ""
+    avoid_instruction = (
+        f"Do not focus on: {avoid_theme}. Prefer different companies, products, or angles."
+        if avoid_theme else ""
+    )
     key = api_key or get_gemini_api_key()
     client = genai.Client(api_key=key)
     grounding_tool = types.Tool(google_search=types.GoogleSearch())
@@ -42,6 +60,9 @@ def run_research(
     user_prompt = RESEARCH_USER_TEMPLATE.format(
         topic_focus=topic_focus,
         reference_date=ref_str,
+        recency_instruction=recency_instruction,
+        angle_instruction=angle_instruction,
+        avoid_instruction=avoid_instruction,
     )
     full_prompt = f"{RESEARCH_SYSTEM}\n\n---\n\n{user_prompt}"
 

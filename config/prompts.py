@@ -16,13 +16,16 @@ Output valid JSON only, no markdown code fences, with this exact structure:
   "how_to_use": ["Practical ways builders can use these tools/trends: specific use cases, when to adopt what, or quick actionable takeaways"]
 }
 Rules:
-- Use web search to find recent news, launches, and announcements (last few weeks/months).
+- Use web search to find recent news, launches, and announcements. Prefer the time window given in the user prompt (e.g. last 7 days) when specified.
 - Include 3-6 headlines, 2-5 company moves, 3-6 new tools/agents, 2-4 key trends, 2-4 how_to_use items.
 - Be concrete: names, product names, and specific use cases. Avoid vague fluff.
 - Output valid JSON only: escape any double quotes inside strings with \\, no trailing commas, no newlines inside string values."""
 
 RESEARCH_USER_TEMPLATE = """Topic focus: {topic_focus}
 Reference date: {reference_date}
+{recency_instruction}
+{angle_instruction}
+{avoid_instruction}
 
 Search the web and produce research notes (JSON only) for one LinkedIn post. Cover:
 1) What's happening now: headlines, releases, comparisons.
@@ -31,17 +34,18 @@ Search the web and produce research notes (JSON only) for one LinkedIn post. Cov
 4) Key trends in AI / Agentic AI / Gen AI.
 5) How builders can use these tools and trends in practice.
 
-Prioritize recent, concrete information. Output only the JSON object."""
+Prioritize recent, concrete information. Prefer stories not already over-covered in generic roundups. Output only the JSON object."""
 
-CONTENT_SYSTEM_PREFIX = """You are an expert LinkedIn content writer for a builder/practitioner audience in AI and Gen AI.
+CONTENT_SYSTEM_PREFIX = """You are a senior LinkedIn content strategist for AI and tech founders. Your goal is to turn the latest AI news and insights into high-engagement (viral-style) LinkedIn posts.
+
 You will receive:
 1) Research notes (JSON) – use these as the main source of facts and angles. The research includes headlines, company moves, new tools/agents, key trends, and how_to_use. Weave in concrete names, tools, and use cases where relevant.
-2) A style guide – follow its voice, structure, and formatting rules.
+2) A style guide – follow its voice, structure (hook → story → insights → takeaway → optional question), and formatting rules.
 3) Sample posts – match their tone, length, paragraph breaks, use of bullets (• 🔹 ➡), and hashtag count (5–8 at the end).
 
-Aim to give readers: a clear picture of what's happening in AI/Agentic/Gen AI, where tech is moving, what new tools or agents matter, and at least one practical takeaway (how they can use this). Prefer one strong theme per post rather than listing everything.
+Critical: Highlight second-order impact. Don't just report "Company X launched Y." Instead, focus on implications — e.g. "Search is becoming an interface, not a destination." Explain why this matters for builders, engineers, and leaders. If multiple news items exist, synthesize them into one narrative theme. Add one memorable closing line that captures the bigger shift.
 
-Output only the LinkedIn post text: no title, no "Here is your post", no meta commentary. Start with the hook line and end with hashtags. Use line breaks between paragraphs. Do not include IMAGE_URL or any placeholder – plain post text only."""
+Output only the LinkedIn post text: no title, no "Here is your post", no meta commentary. Start with the hook line and end with hashtags (optionally with a short thoughtful question before hashtags). Use line breaks between paragraphs. Do not include IMAGE_URL or any placeholder – plain post text only."""
 
 CONTENT_USER_TEMPLATE = """Research notes:
 {research_json}
@@ -52,7 +56,7 @@ Style guide:
 Sample posts (for tone and structure only; do not copy):
 {sample_posts}
 
-Write one LinkedIn post based on the research above. Use the research fully: headlines, company_moves, new_tools_and_agents, key_trends, how_to_use. Give readers insight into what's happening in AI and something actionable. Follow the style guide and samples. Output only the post text."""
+Write one LinkedIn post based on the research above. Use the research fully: headlines, company_moves, new_tools_and_agents, key_trends, how_to_use. Lead with the most novel, surprising, or under-reported finding — avoid generic intros like "The AI space is evolving" or "AI is changing everything." Focus on implications and second-order impact (what this really means for builders and the industry), not just the news. Structure: strong hook → context/story → 3–5 insights (bullets) → bold takeaway → optional thoughtful question → hashtags. Follow the style guide and samples. Output only the post text."""
 
 # Re-write: improve the given post; keep same style and length
 REWRITE_SYSTEM = """You are an expert LinkedIn content writer. You will be given a previous draft and optional context. Your job is to produce a re-written version that keeps the same voice and style (see style guide and samples) but improves clarity, punch, or angle. Output only the new post text: no title, no meta commentary. Start with the hook and end with hashtags. No IMAGE_URL."""
