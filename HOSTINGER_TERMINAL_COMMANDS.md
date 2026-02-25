@@ -83,15 +83,16 @@ If asked to choose an editor, pick **nano** (often option 1). Then add these **t
 0 11 * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py
 ```
 
-**11:30 AM server time (approval – post to LinkedIn):**
+**Post to LinkedIn as soon as you approve (every 5 min on Mon/Wed/Fri):**
 ```cron
-30 11 * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py --approval
+*/5 * * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py --approval-only
 ```
+This runs only the approval check (no new draft email). When you reply APPROVE to the draft email, the next run within 5 minutes will post it to LinkedIn.
 
-**For 11:00 AM and 11:30 AM India (IST)** when server is in UTC, use:
+**For 11:00 AM India (IST)** when server is in UTC, use for the pipeline:
 ```cron
 30 5 * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py
-0 6 * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py --approval
+*/5 * * * 1,3,5 cd /root/linkedin-bot && .venv/bin/python scripts/cron_run.py --approval-only
 ```
 
 Save: **Ctrl+O**, Enter. Exit: **Ctrl+X**.

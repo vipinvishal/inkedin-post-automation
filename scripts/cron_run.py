@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Cron entry point: run pipeline (and optionally approval check) with logging.
+Cron entry point: run pipeline and/or approval check with logging.
 Use this on Hostinger or any server with cron.
 
-  python scripts/cron_run.py              → run pipeline only
-  python scripts/cron_run.py --approval  → run pipeline, then approval check
+  python scripts/cron_run.py               → run pipeline only (draft email)
+  python scripts/cron_run.py --approval   → run pipeline, then approval check
+  python scripts/cron_run.py --approval-only  → run only approval check (no pipeline)
 
+Use --approval-only in a frequent cron (e.g. every 5 min on Mon/Wed/Fri) so that
+when you reply APPROVE to the email, the next run picks it up and posts to LinkedIn.
 Logs go to logs/cron.log (created automatically).
 """
 import sys
@@ -15,7 +18,7 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG_DIR = ROOT / "logs"
-LOG_FILE = LOG_DIR / "cron.log"
+LOG_FILE = ROOT / "logs" / "cron.log"
 
 # Prefer venv Python so cron uses the same deps as local
 PYTHON = ROOT / ".venv" / "bin" / "python"
@@ -24,7 +27,8 @@ if not PYTHON.exists():
 
 
 def main() -> None:
-    run_approval = "--approval" in sys.argv
+    approval_only = "--approval-only" in sys.argv
+    run_approval = "--approval" in sys.argv or approval_only
     LOG_DIR.mkdir(exist_ok=True)
 
     with open(LOG_FILE, "a", encoding="utf-8") as log:
@@ -35,22 +39,23 @@ def main() -> None:
         ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         write(f"\n--- {ts} (cron_run.py) ---\n")
 
-        # Run pipeline
-        write("Running pipeline...\n")
-        r = subprocess.run(
-            [str(PYTHON), str(ROOT / "scripts" / "run_pipeline.py")],
-            cwd=str(ROOT),
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-        write(r.stdout or "")
-        if r.stderr:
-            write("stderr: " + r.stderr)
-        if r.returncode != 0:
-            write(f"Pipeline exit code: {r.returncode}\n")
-            sys.exit(r.returncode)
-        write("Pipeline OK.\n")
+        if not approval_only:
+            # Run pipeline (draft email)
+            write("Running pipeline...\n")
+            r = subprocess.run(
+                [str(PYTHON), str(ROOT / "scripts" / "run_pipeline.py")],
+                cwd=str(ROOT),
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            write(r.stdout or "")
+            if r.stderr:
+                write("stderr: " + r.stderr)
+            if r.returncode != 0:
+                write(f"Pipeline exit code: {r.returncode}\n")
+                sys.exit(r.returncode)
+            write("Pipeline OK.\n")
 
         if run_approval:
             write("Running approval check...\n")

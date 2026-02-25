@@ -33,10 +33,11 @@ def main() -> None:
         return
 
     skipped = 0
+    unknown_ids: set[str] = set()
     for action, draft_id in actions:
         draft = get_draft(draft_id)
         if not draft:
-            print(f"  Unknown draft id: {draft_id} (skipping)")
+            unknown_ids.add(draft_id)
             continue
 
         status = draft.get("status", "pending")
@@ -87,6 +88,8 @@ def main() -> None:
 
     if skipped:
         print(f"  (Skipped {skipped} reply/replies already handled.)")
+    if unknown_ids:
+        print(f"  (Skipped {len(unknown_ids)} reply/replies with unknown draft ids — likely from older emails.)")
 
 
 if __name__ == "__main__":
