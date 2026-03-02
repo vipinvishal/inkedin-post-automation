@@ -102,14 +102,17 @@ def run_research(
         "headlines",
         "summaries",
         "links",
-        "comparisons_or_insights",
+        "contrarian_angle",
+        "second_order_impact",
         "date_context",
         "company_moves",
         "new_tools_and_agents",
         "key_trends",
         "how_to_use",
+        "viral_hook_angles",
     }
+    string_keys = {"date_context", "contrarian_angle"}
     for k in expected:
         if k not in notes:
-            notes[k] = [] if k != "date_context" else ""
+            notes[k] = "" if k in string_keys else []
     return notes
