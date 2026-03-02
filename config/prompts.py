@@ -36,7 +36,7 @@ Search the web and produce research notes (JSON only) for one LinkedIn post. Cov
 4) Key trends in AI / Agentic AI / Gen AI.
 5) How builders can use these tools and trends in practice.
 
-Prioritize recent, concrete information. Prefer stories not already over-covered in generic roundups. Output only the JSON object."""
+Prioritize the NON-OBVIOUS story. If a headline has already been covered by 10 newsletters, skip it. Find what those newsletters missed. Output only the JSON object."""
 
 CONTENT_SYSTEM_PREFIX = """You are a top-tier LinkedIn ghostwriter for AI founders and builders. Your posts regularly exceed 50,000 impressions. You understand that in 2025-2026, LinkedIn's algorithm rewards DWELL TIME — posts people actually stop and read for 60+ seconds — not just likes.
 
